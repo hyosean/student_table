@@ -14,7 +14,7 @@ const Table = () => {
 	// }
 	useEffect(() => {}, [students]);
 
-	const onClickButton = () => {
+	const onClickButtonAdd = () => {
 		console.log({
 			name: nameRef.current.value,
 			num: numRef.current.value,
@@ -46,6 +46,7 @@ const Table = () => {
 		let list = [...students];
 
 		list = list.filter((cur) => cur.id !== id);
+		//id값 동기화
 		list.map((cur, idx) => {
 			cur.id = idx + 1;
 		});
@@ -53,37 +54,76 @@ const Table = () => {
 		setStudents(list);
 	};
 
+	//수정
+	const onClickInput = (e, value, idx) => {
+		if (e.target.readOnly) {
+			e.target.readOnly = false;
+			let changeValue = window.prompt('변경 될 값을 입력해 주세요.');
+			//빈값 일시
+			if (changeValue === '') {
+				return false;
+			}
+			//변환 값 출력
+			let list = [...students];
+			list.map((cur) => {
+				if (cur.name === value && cur.id === idx) {
+					cur.name = changeValue;
+				} else if (cur.num === value && cur.id === idx) {
+					cur.num = changeValue;
+				} else if (cur.major === value && cur.id === idx) {
+					cur.major = changeValue;
+				}
+			});
+			setStudents(list);
+			e.target.readOnly = true;
+		}
+	};
+
 	return (
 		<table width="600px" border="1">
-			<thead>
-				<caption style={{display: 'none'}}>학생 명부</caption>
-				<colgroup>
-					<col width="100px"></col>
-					<col width="100px"></col>
-					<col width="100px"></col>
-					<col width="100px"></col>
-					<col width="100px"></col>
-					<col width="100px"></col>
-				</colgroup>
-			</thead>
+			<caption style={{display: 'none'}}>학생 명부</caption>
+			<colgroup>
+				<col width="100px"></col>
+				<col width="100px"></col>
+				<col width="100px"></col>
+				<col width="100px"></col>
+				<col width="100px"></col>
+			</colgroup>
 			<tbody>
 				<tr>
 					<th>번호</th>
 					<th>이름</th>
 					<th>학번</th>
 					<th>학과</th>
-					<th>수정</th>
 					<th>삭제</th>
 				</tr>
 
 				{students.map((student, idx) => (
 					<tr key={idx + 'tr'}>
 						<td>{student.id}</td>
-						<td>{student.name}</td>
-						<td>{student.num}</td>
-						<td>{student.major}</td>
 						<td>
-							<button>수정</button>
+							<input
+								type="text"
+								value={student.name}
+								readOnly
+								onDoubleClick={(e) => onClickInput(e, student.name, student.id)}
+							/>
+						</td>
+						<td>
+							<input
+								type="text"
+								value={student.num}
+								readOnly
+								onDoubleClick={(e) => onClickInput(e, student.num, student.id)}
+							/>
+						</td>
+						<td>
+							<input
+								type="text"
+								value={student.major}
+								readOnly
+								onDoubleClick={(e) => onClickInput(e, student.major, student.id)}
+							/>
 						</td>
 						<td>
 							<button onClick={() => onClickDelate(student.id)}>삭제</button>
@@ -103,8 +143,8 @@ const Table = () => {
 					<td>
 						<input type="text" ref={majorRef} />
 					</td>
-					<td colSpan="2">
-						<button onClick={() => onClickButton()}>추가</button>
+					<td>
+						<button onClick={() => onClickButtonAdd()}>추가</button>
 					</td>
 				</tr>
 			</tbody>
